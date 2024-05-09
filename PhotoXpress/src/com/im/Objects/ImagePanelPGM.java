@@ -41,12 +41,12 @@ public class ImagePanelPGM extends JPanel{
         int width = (int)img.getWidth();
         int height = (int)img.getHeight();
         int[][] arr = img.pgmToIntArray();
-        System.out.println(heightMove);
-        System.out.println(widthMove);
+//        System.out.println(heightMove);
+//        System.out.println(widthMove);
         int widthMove = this.widthMove + (this.WIDTH - width*resolution)/2;
         int heightMove = this.heightMove + (this.HEIGHT - height*resolution)/2;
-        System.out.println(heightMove);
-        System.out.println(widthMove);
+//        System.out.println(heightMove);
+//        System.out.println(widthMove);
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
                 color = arr[h][w];

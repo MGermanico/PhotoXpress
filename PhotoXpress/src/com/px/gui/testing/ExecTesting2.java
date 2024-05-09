@@ -47,7 +47,7 @@ public class ExecTesting2 {
 //            img.showArrayOnLogger();
             ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen();
 //            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen(640,360);
-            imgPanel.setHeightMove(20);
+            imgPanel.setHeightMove(220);
             imgPanel.setWidthMove(600);
             backgroundFrame.add(imgPanel);
         } catch (FileNotFoundException ex) {

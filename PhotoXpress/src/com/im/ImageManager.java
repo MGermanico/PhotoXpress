@@ -20,12 +20,12 @@ import javax.swing.JPanel;
  */
 public class ImageManager {
     private Image img;
-    private Image resizeImg;
+    private Image resizedImg;
     
     public ImageManager(String path) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
         try{
             PGMImage img = new PGMImage(path);
-            resizeImg = img;
+            resizedImg = img;
             constructor(img);
         } catch (FileNotFoundException  | 
                 InvalidFormatException | 
@@ -48,26 +48,30 @@ public class ImageManager {
     }
 
     public JPanel pintarImagen() throws InvalidFormatException, Exception{
-        if (this.resizeImg instanceof PGMImage) {
+        if (this.resizedImg instanceof PGMImage) {
             PGMImage resizeImg;
-            resizeImg = (PGMImage) this.resizeImg;
-            resizeImg.grabar();
+            resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.lessResolution();
+            resizeImg.moreResolution(5);
+            resizeImg.lessResolution();
+            resizeImg.lessResolution();
+
             ImagePanelPGM pgmpanel = new ImagePanelPGM(resizeImg);
-            while(pgmpanel.HEIGHT > pgmpanel.getImg().getHeight()){
-                if (pgmpanel.HEIGHT < pgmpanel.getImg().getHeight() * 0.25) {
-                    resizeImg.disminuirResolucion();
-                    resizeImg.disminuirResolucion();
-                    pgmpanel = new ImagePanelPGM(resizeImg);
-                } else if (pgmpanel.HEIGHT < pgmpanel.getImg().getHeight() * 0.50) {
-                    resizeImg.disminuirResolucion();
-                    pgmpanel = new ImagePanelPGM(resizeImg);
-                } else if (pgmpanel.HEIGHT < pgmpanel.getImg().getHeight() * 0.75) {
-                    resizeImg.disminuirResolucion();
-                    resizeImg.disminuirResolucion();
-                    pgmpanel = new ImagePanelPGM(resizeImg);
-                    pgmpanel.setResolution(3);
-                }
-            }
+//            while(pgmpanel.HEIGHT < pgmpanel.getImg().getHeight()){
+//                if (pgmpanel.HEIGHT > pgmpanel.getImg().getHeight() * 0.75) {
+//                    resizeImg.lessResolution();
+//                    resizeImg.lessResolution();
+//                    pgmpanel = new ImagePanelPGM(resizeImg);
+//                    pgmpanel.setResolution(3);
+//                } else if (pgmpanel.HEIGHT > pgmpanel.getImg().getHeight() * 0.50) {
+//                    resizeImg.lessResolution();
+//                    pgmpanel = new ImagePanelPGM(resizeImg);
+//                } else if (pgmpanel.HEIGHT > pgmpanel.getImg().getHeight() * 0.25) {
+//                    resizeImg.lessResolution();
+//                    resizeImg.lessResolution();
+//                    pgmpanel = new ImagePanelPGM(resizeImg);
+//                }
+//            }
             return pgmpanel;
         }else{
             throw new InvalidFormatException();
@@ -84,6 +88,6 @@ public class ImageManager {
 
     public void setImg(Image img) {
         this.img = img;
-        resizeImg = img;
+        resizedImg = img;
     }
 }
