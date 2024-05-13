@@ -32,6 +32,38 @@ public class PGMImage extends Image{
         constructor(img);
     }
     
+    public void turnRight(){
+        changeColumnsByRows();
+        flipColumns();
+    }
+    
+    private void changeColumnsByRows(){
+        double height = this.height;
+        this.height = this.width;
+        this.width = height;
+        double[][] arrTmp = new double[(int)this.width][(int)this.height];
+        for (int i = 0; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++) {
+                arrTmp[i][j] = this.imgArr[j][i];
+            }
+        }
+        this.imgArr = arrTmp;
+    }
+    
+    public void flipColumns(){
+        double[][] arrTmp = new double[(int)this.height][(int)this.width];
+        for (int i = 0, iT = (int)this.height; i < this.height; i++, iT--) {
+            for (int j = 0, jT = (int)this.width; j < this.width; j++, jT--) {
+                arrTmp[i][j] = this.imgArr[jT][iT];
+            }
+        }
+        this.imgArr = arrTmp;
+    }
+    
+    public void flipRows(){
+        
+    }
+    
     private void constructor(File img) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
         try(Scanner scFile = new Scanner(img)) {
             if (!scFile.nextLine().equals("P2")) {
@@ -41,7 +73,7 @@ public class PGMImage extends Image{
             this.setWidth(scFile.nextInt());
             this.setHeight(scFile.nextInt());
             this.setMaxWhite(scFile.nextInt());
-            pgmToArray(scFile);
+            pgmToArray(scFile, 255/this.maxWhite);
         } catch (FileNotFoundException  | 
                 InvalidFormatException | 
                 InvalidImageSizeException | 
@@ -50,11 +82,11 @@ public class PGMImage extends Image{
         }
     }
     
-    private void pgmToArray(Scanner sc) throws InvalidFormatException{
+    private void pgmToArray(Scanner sc, double factor) throws InvalidFormatException{
         this.imgArr = new double[(int)this.height][(int)this.width];
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
-                this.imgArr[i][j] = sc.nextInt();
+                this.imgArr[i][j] = sc.nextInt() * factor;
             }
         }
     }
@@ -94,7 +126,7 @@ public class PGMImage extends Image{
         double[][] arrTmp = new double[(int)this.height/2][(int)this.width/2];
         arrTmp = splitSize(arrTmp);
         this.height = Math.floor(this.height/2);
-        this.width = Math.floor(this.height/2);
+        this.width = Math.floor(this.width/2);
         this.imgArr = arrTmp;
         try {
             this.earlySave();

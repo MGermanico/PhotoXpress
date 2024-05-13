@@ -15,15 +15,17 @@ import javax.swing.JPanel;
  * @author migue
  */
 public class ImagePanelPGM extends JPanel{
-    public final int WIDTH = 640;
-    public final int HEIGHT = 360;
+    public final int WIDTH;//640
+    public final int HEIGHT;//360
     private PGMImage img;
     private int heightMove = 0;
     private int widthMove = 0;
     private int resolution = 1;
     
-    public ImagePanelPGM(Image img) {
+    public ImagePanelPGM(Image img, int width, int height) {
         this.img = (PGMImage) img;
+        this.WIDTH = width;
+        this.HEIGHT = height;
         setBorder(BorderFactory.createLineBorder(Color.black));
     }
     public Dimension getPreferredSize() {

@@ -42,10 +42,10 @@ public class ExecTesting2 {
         backgroundFrame.setSize(1280, 720);
         backgroundFrame.setVisible(true);
         try {
-            ImageManager im = new ImageManager("./imagenes/gato.pgm");
+            ImageManager im = new ImageManager("./imagenes/imagen.pgm");
             PGMImage img = (PGMImage)im.getImg();
 //            img.showArrayOnLogger();
-            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen();
+            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen(640, 360);
 //            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen(640,360);
             imgPanel.setHeightMove(220);
             imgPanel.setWidthMove(600);
