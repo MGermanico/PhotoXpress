@@ -53,11 +53,10 @@ public class ImageManager {
     }
 
     public JPanel pintarImagen(int width, int height) throws InvalidFormatException, Exception{
-        int n = -1;
         if (this.resizedImg instanceof PGMImage) {
             PGMImage resizeImg;
             resizeImg = (PGMImage) this.resizedImg;
-            int iterations = 0;
+            
             if (resizeImg.getHeight() < height && resizeImg.getWidth() < width) {
                 if (height - resizeImg.getHeight() < width - resizeImg.getWidth()) {
                     resizeImg.moreResolution((int)(height - resizeImg.getHeight())/14);
@@ -65,46 +64,52 @@ public class ImageManager {
                     resizeImg.moreResolution((int)(width - resizeImg.getWidth())/7);
                 }
             }else{
-                while(resizeImg.getHeight() - height > resizeImg.getWidth()- width && resizeImg.getHeight() > height && n == -1){
-    //                System.out.println("lower   " + (resizeImg.getHeight() - height));
-                    for (Double key : this.factorOfResizingKeyList) {
-                        key /= Math.pow(2, iterations);
-    //                    System.out.println(key);
-                        if (resizeImg.getHeight()*key < height) {
-    //                        System.out.println("yes   ");
-    //                        System.out.println("key: " + key + " * (1+" + iterations + ") = " + (key*(iterations + 1)));
-                            n = this.factorOfResizing.get(key*(iterations + 1));
-                            break;
-                        }
-                    }
-                    iterations++;
-                }
-                while(resizeImg.getWidth()- width > resizeImg.getHeight()- height && resizeImg.getWidth()> width && n == -1){
-                    for (Double key : this.factorOfResizingKeyList) {
-                        key /= Math.pow(2, iterations);
-                        if (resizeImg.getHeight()*key < height) {
-                            n = this.factorOfResizing.get(key*(iterations + 1));
-                            break;
-                        }
-                    }
-                    iterations++;
-                }
-                int factor = n;
-                resizeImg.moreResolution(n);
-                while(factor >= 1){
-                    resizeImg.lessResolution();
-                    factor /= 2;
-                }
-
-                for (int i = 0; i < iterations - 1; i++) {
-                    resizeImg.lessResolution();
-                }
+                resizeImg = acotaImagenPGM();
             }
             resizeImg.turnRight();
             ImagePanelPGM pgmpanel = new ImagePanelPGM(resizeImg, width, height);
             return pgmpanel;
         }else{
             throw new InvalidFormatException();
+        }
+    }
+    
+    private PGMImage acotaImagenPGM(int width, int height, PGMImage resizeImg) throws Exception{
+        int iterations = 0;
+        int n = -1;
+        while(resizeImg.getHeight() - height > resizeImg.getWidth()- width && resizeImg.getHeight() > height && n == -1){
+//                System.out.println("lower   " + (resizeImg.getHeight() - height));
+            for (Double key : this.factorOfResizingKeyList) {
+                key /= Math.pow(2, iterations);
+//                    System.out.println(key);
+                if (resizeImg.getHeight()*key < height) {
+//                        System.out.println("yes   ");
+//                        System.out.println("key: " + key + " * (1+" + iterations + ") = " + (key*(iterations + 1)));
+                    n = this.factorOfResizing.get(key*(iterations + 1));
+                    break;
+                }
+            }
+            iterations++;
+        }
+        while(resizeImg.getWidth()- width > resizeImg.getHeight()- height && resizeImg.getWidth()> width && n == -1){
+            for (Double key : this.factorOfResizingKeyList) {
+                key /= Math.pow(2, iterations);
+                if (resizeImg.getHeight()*key < height) {
+                    n = this.factorOfResizing.get(key*(iterations + 1));
+                    break;
+                }
+            }
+            iterations++;
+        }
+        int factor = n;
+        resizeImg.moreResolution(n);
+        while(factor >= 1){
+            resizeImg.lessResolution();
+            factor /= 2;
+        }
+
+        for (int i = 0; i < iterations - 1; i++) {
+            resizeImg.lessResolution();
         }
     }
     
