@@ -8,7 +8,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -31,6 +34,15 @@ public class ExecTesting {
         backgroundFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         backgroundFrame.setSize(1280, 720);
         backgroundFrame.setVisible(true);
+        JDialog dialogT = new JDialog(backgroundFrame, "ERROR", true);
+        dialogT.setBounds(100, 100, 450, 280);
+        JButton closeError = new JButton("Cerrar");
+        closeError.setBounds( 165, 180, 80, 30);
+        JLabel messegeError = new JLabel("ERROR");
+        messegeError.setBounds(50, 0, 0, 0);
+        dialogT.add(closeError);
+        dialogT.add(messegeError);
+        dialogT.setVisible(true);
         backgroundFrame.add(new MyPanel());
     }
     

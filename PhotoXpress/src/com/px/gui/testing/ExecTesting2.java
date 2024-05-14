@@ -42,12 +42,12 @@ public class ExecTesting2 {
         backgroundFrame.setSize(1280, 720);
         backgroundFrame.setVisible(true);
         try {
-            ImageManager im = new ImageManager("./imagenes/imagen.pgm");
+            ImageManager im = new ImageManager("./imagenes/imagen_1.pgm");
             PGMImage img = (PGMImage)im.getImg();
 //            img.showArrayOnLogger();
-            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen(640, 360);
-//            ImagePanelPGM imgPanel = (ImagePanelPGM) im.pintarImagen(640,360);
-            imgPanel.setHeightMove(220);
+            ImagePanelPGM imgPanel = (ImagePanelPGM) im.printImage(640, 360);
+//            ImagePanelPGM imgPanel = (ImagePanelPGM) im.printImage(640,360);
+            imgPanel.setHeightMove(20);
             imgPanel.setWidthMove(600);
             backgroundFrame.add(imgPanel);
         } catch (FileNotFoundException ex) {

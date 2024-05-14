@@ -11,6 +11,7 @@ import com.im.exceptions.InvalidPGMMaxWhiteException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -33,15 +34,21 @@ public class PGMImage extends Image{
     }
     
     public void turnRight(){
+        System.out.println(this.height);
         changeColumnsByRows();
         flipColumns();
+        System.out.println(this.height);
+    }
+    public void turnLeft(){
+        changeColumnsByRows();
+        flipRows();
     }
     
     private void changeColumnsByRows(){
+        double[][] arrTmp = new double[(int)this.width][(int)this.height];
         double height = this.height;
         this.height = this.width;
         this.width = height;
-        double[][] arrTmp = new double[(int)this.width][(int)this.height];
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
                 arrTmp[i][j] = this.imgArr[j][i];
@@ -50,18 +57,24 @@ public class PGMImage extends Image{
         this.imgArr = arrTmp;
     }
     
-    public void flipColumns(){
+    public void flipRows(){
         double[][] arrTmp = new double[(int)this.height][(int)this.width];
-        for (int i = 0, iT = (int)this.height; i < this.height; i++, iT--) {
-            for (int j = 0, jT = (int)this.width; j < this.width; j++, jT--) {
-                arrTmp[i][j] = this.imgArr[jT][iT];
+        for (int i = 0, iT = (int)this.height - 1; i < this.height; i++, iT--) {
+            for (int j = 0, jT = (int)this.width - 1; j < this.width; j++, jT--) {
+                arrTmp[i][j] = this.imgArr[iT][j];
             }
         }
         this.imgArr = arrTmp;
     }
     
-    public void flipRows(){
-        
+    public void flipColumns(){
+        double[][] arrTmp = new double[(int)this.height][(int)this.width];
+        for (int i = 0, iT = (int)this.height - 1; i < this.height; i++, iT--) {
+            for (int j = 0, jT = (int)this.width - 1; j < this.width; j++, jT--) {
+                arrTmp[i][j] = this.imgArr[i][jT];
+            }
+        }
+        this.imgArr = arrTmp;
     }
     
     private void constructor(File img) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
@@ -77,7 +90,8 @@ public class PGMImage extends Image{
         } catch (FileNotFoundException  | 
                 InvalidFormatException | 
                 InvalidImageSizeException | 
-                InvalidPGMMaxWhiteException ex) {
+                InvalidPGMMaxWhiteException |
+                NoSuchElementException ex) {
             throw ex;
         }
     }
