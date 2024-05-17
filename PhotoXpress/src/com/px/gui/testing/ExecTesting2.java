@@ -50,6 +50,7 @@ public class ExecTesting2 {
             imgPanel.setHeightMove(20);
             imgPanel.setWidthMove(600);
             backgroundFrame.add(imgPanel);
+            backgroundFrame.remove(imgPanel);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(com.im.gui.ExecTesting.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidFormatException ex) {

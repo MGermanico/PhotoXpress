@@ -158,7 +158,14 @@ public class PGMImage extends Image{
         }
         return arrT;
     }
-    public void moreResolution(int n) throws Exception{
+    public void moreResolution(double nInput) throws Exception{
+        int n;
+        if (nInput > 0 && nInput < 1) {
+            n = 1;
+            System.out.println("por muy poco");
+        }else{
+            n = (int)nInput;
+        }
         double[][] arrTmp = new double[(int)this.height*n][(int)this.width*n];
         arrTmp = multiplySize(arrTmp, n);
         arrTmp = fillVoid(arrTmp, n);

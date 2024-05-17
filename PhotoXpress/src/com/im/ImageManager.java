@@ -56,24 +56,31 @@ public class ImageManager {
         if (this.resizedImg instanceof PGMImage) {
             PGMImage resizeImg;
             resizeImg = (PGMImage) this.resizedImg;
-//            resizeImg.turnRight();
-//            System.out.println(resizeImggetWidth() + " , " + width);
             if (resizeImg.getHeight() < height && resizeImg.getWidth() < width) {
+                System.out.println("LA IMG ES PEQUEÑA");
                 if ((resizeImg.getHeight()*1.0/resizeImg.getWidth()) > height*1.0/width) {
-                    System.out.println("s " + (height*1.0/resizeImg.getHeight() - 1));
-                    resizeImg.moreResolution((int)(height/resizeImg.getHeight() - 1));
+                    System.out.println("de alto " + (height*1.0/resizeImg.getHeight() - 1));
+                    resizeImg.moreResolution((height/resizeImg.getHeight() - 1));
                 }else{
-                    System.out.println("n " + (width/resizeImg.getWidth() - 1));
-//                    resizeImg.moreResolution((int)20);
-                    resizeImg.moreResolution((int)(width*1.0/resizeImg.getWidth() - 1));
+                    System.out.println("de ancho " + (width/resizeImg.getWidth() - 1));
+                    resizeImg.moreResolution((width*1.0/resizeImg.getWidth() - 1));
                 }
             }else{
+                System.out.println("LA IMG ES GRANDE");
                 resizeImg = acotaImagenPGM(width, height, resizeImg);
             }
             ImagePanelPGM pgmpanel = new ImagePanelPGM(resizeImg, width, height);
             return pgmpanel;
         }else{
             throw new InvalidFormatException();
+        }
+    }
+    
+    public void turnRightImg(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.turnRight();
+            this.resizedImg = resizeImg;
         }
     }
     
