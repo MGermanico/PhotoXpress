@@ -15,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 /**
@@ -23,7 +25,7 @@ import javax.swing.JPanel;
  */
 public class ImageManager {
     private Image img;
-    private Image resizedImg;
+    private PGMImage resizedImg;
     private HashMap<Double, Integer> factorOfResizing = new HashMap<Double, Integer>();
     private ArrayList<Double> factorOfResizingKeyList = new ArrayList<Double>();
     
@@ -83,7 +85,27 @@ public class ImageManager {
             this.resizedImg = resizeImg;
         }
     }
-    
+    public void turnLeftImg(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.turnLeft();
+            this.resizedImg = resizeImg;
+        }
+    }
+    public void VerticalFlipImg(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.flipRows();
+            this.resizedImg = resizeImg;
+        }
+    }
+    public void HorizontalFlipImg(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.flipColumns();
+            this.resizedImg = resizeImg;
+        }
+    }
     private PGMImage acotaImagenPGM(int width, int height, PGMImage resizeImg) throws Exception{
         int iterations = 0;
         int n = -1;
@@ -143,6 +165,6 @@ public class ImageManager {
 
     public void setImg(Image img) {
         this.img = img;
-        resizedImg = img;
+        resizedImg = (PGMImage) img;
     }
 }
