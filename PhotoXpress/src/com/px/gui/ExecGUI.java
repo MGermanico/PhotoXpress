@@ -39,87 +39,119 @@ public class ExecGUI{
     public JFrame backgroundFrame;
     public ImageManager im = null;
     public Image image;
-    public JButton turnRightButton;
+    public JButton button;
     public JPanel imagePanel;
-    public JMenuBar menuBarra;
+    public JMenuBar menuBar;
     public JMenu menuFile;
     
     public ExecGUI(){
-        initComponents();
+        initComponents(null);
         inicializaMenuBar();
         printImage();
     }
     
     public ExecGUI(ImageManager im){
         this.im = im;
-        initComponents();
+        initComponents(null);
         inicializaMenuBar();
         printImage();
     }
     
-    private void initComponents(){
+    public ExecGUI(String path){
+        initComponents(path);
+        inicializaMenuBar();
+        printImage();
+    }
+    
+    private void initComponents(String path){
+        if (path == null) {
+            path = "./imagenes/imagen.pgm";
+        }
+        
         backgroundFrame = new JFrame("PHOTOSHOP DE ALIEXPRESS");
         backgroundFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         backgroundFrame.setSize(1280, 720);
         backgroundFrame.setVisible(true);
         
-        this.menuBarra = new JMenuBar();
+        this.menuBar = new JMenuBar();
         this.menuFile = new JMenu();
         
         menuFile.setText("File");
-        menuBarra.add(menuFile);
+        menuBar.add(menuFile);
         
-        this.backgroundFrame.setJMenuBar(menuBarra);
+        this.backgroundFrame.setJMenuBar(menuBar);
         
         try {
             if (im == null) {
-                im = new ImageManager("./imagenes/perrete.pgm");
+                im = new ImageManager(path);
             }
             image = im.getImg();
             
-            turnRightButton = new JButton("Girar derecha");
-            turnRightButton.setVisible(true);
-            turnRightButton.setBounds(20, 20, 200, 60);
-            turnRightButton.addActionListener(new ActionListener() {
+            button = new JButton("Girar derecha");
+            button.setVisible(true);
+            button.setBounds(20, 20, 200, 60);
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     turnRight();
                 }
             });
-            backgroundFrame.add(turnRightButton);
+            backgroundFrame.add(button);
             
-            turnRightButton = new JButton("Girar izquierda");
-            turnRightButton.setVisible(true);
-            turnRightButton.setBounds(20, 80, 200, 60);
-            turnRightButton.addActionListener(new ActionListener() {
+            button = new JButton("Girar izquierda");
+            button.setVisible(true);
+            button.setBounds(20, 80, 200, 60);
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     turnLeft();
                 }
             });
-            backgroundFrame.add(turnRightButton);
+            backgroundFrame.add(button);
             
-            turnRightButton = new JButton("Flip vertical");
-            turnRightButton.setVisible(true);
-            turnRightButton.setBounds(220, 20, 200, 60);
-            turnRightButton.addActionListener(new ActionListener() {
+            button = new JButton("Flip vertical");
+            button.setVisible(true);
+            button.setBounds(220, 20, 200, 60);
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     flipV();
                 }
             });
-            backgroundFrame.add(turnRightButton);
+            backgroundFrame.add(button);
             
-            turnRightButton = new JButton("Flip horizontal");
-            turnRightButton.setVisible(true);
-            turnRightButton.setBounds(220, 80, 200, 60);
-            turnRightButton.addActionListener(new ActionListener() {
+            button = new JButton("Flip horizontal");
+            button.setVisible(true);
+            button.setBounds(220, 80, 200, 60);
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     flipH();
                 }
             });
-            backgroundFrame.add(turnRightButton);
+            backgroundFrame.add(button);
+            
+            button = new JButton("Filtro negativo");
+            button.setVisible(true);
+            button.setBounds(20, 140, 200, 60);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    negativeFilter();
+                }
+            });
+            backgroundFrame.add(button);
+            
+            button = new JButton("Filtro caja");
+            button.setVisible(true);
+            button.setBounds(220, 140, 200, 60);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    boxFilter();
+                }
+            });
+            backgroundFrame.add(button);
             
         } catch (Exception ex) {
             throwError(ex.getMessage());
@@ -140,31 +172,27 @@ public class ExecGUI{
         jMenuItemGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                guardarImagen();
+                guardarImagen();
             }
         });
     }
     
     private void cargarImagen(){
-        System.out.println("hola");
         JFileChooser eligeArchivos = new JFileChooser();
         eligeArchivos.showOpenDialog(this.backgroundFrame);
         File archivo = eligeArchivos.getSelectedFile();
         
+        this.backgroundFrame.dispose();
+        new ExecGUI(archivo.getPath());
+    }
+    
+    private void guardarImagen(){
         try {
-            im = new ImageManager(archivo);
-            actualizaImg();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ExecGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidFormatException ex) {
-            Logger.getLogger(ExecGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidImageSizeException ex) {
-            Logger.getLogger(ExecGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidPGMMaxWhiteException ex) {
+            this.im.save();
+        } catch (Exception ex) {
             Logger.getLogger(ExecGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
     public void turnRight(){
         im.turnRightImg();
         actualizaImg();
@@ -185,6 +213,16 @@ public class ExecGUI{
         actualizaImg();
     }
     
+    public void negativeFilter(){
+        im.negativeFilter();
+        actualizaImg();
+    }
+    
+    public void boxFilter(){
+        im.boxFilter();
+        actualizaImg();
+    }
+    
     private void actualizaImg(){
         this.backgroundFrame.dispose();
         new ExecGUI(im);
@@ -194,7 +232,7 @@ public class ExecGUI{
         PGMImage img = (PGMImage)image;
         ImagePanelPGM imgPanel;
         try {
-            imgPanel = (ImagePanelPGM) im.printImage(640, 360);
+            imgPanel = (ImagePanelPGM) im.printImage(640, 360, false);
             imgPanel.setHeightMove(20);
             imgPanel.setWidthMove(600);
             imagePanel = imgPanel;

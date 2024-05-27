@@ -26,13 +26,56 @@ public class PGMImage extends Image{
 
     public PGMImage(String path) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException {
         File img = new File(path);
+        super.imgFile = img;
         constructor(img);
     }
     
     public PGMImage(File img) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException {
+        super.imgFile = img;
         constructor(img);
     }
-    
+    private void constructor(File img) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
+        try(Scanner scFile = new Scanner(img)) {
+            if (!scFile.nextLine().equals("P2")) {
+                throw new InvalidFormatException();
+            }
+            this.messege = scFile.nextLine();
+            this.setWidth(scFile.nextInt());
+            this.setHeight(scFile.nextInt());
+            this.setMaxWhite(scFile.nextInt());
+            pgmToArray(scFile, 255/this.maxWhite);
+            this.setMaxWhite(255);
+        } catch (FileNotFoundException  | 
+                InvalidFormatException | 
+                InvalidImageSizeException | 
+                InvalidPGMMaxWhiteException |
+                NoSuchElementException ex) {
+            throw ex;
+        }
+    }
+    private void pgmToArray(Scanner sc, double factor) throws InvalidFormatException{
+        this.imgArr = new double[(int)this.height][(int)this.width];
+        for (int i = 0; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++) {
+                this.imgArr[i][j] = sc.nextInt() * factor;
+            }
+        }
+    }
+    public int[][] pgmToIntArray(){
+        int[][] retArr;
+        int height = (int)this.height;
+        int width = (int)this.width;
+        retArr = new int[height][width];
+//        System.out.println(height);
+//        System.out.println(width);
+        for (int h = 0; h < height; h++) {
+            for (int w = 0; w < width; w++) {
+//                System.out.println(h + " , " + w);
+                retArr[h][w] = (int)this.imgArr[h][w];
+            }
+        }
+        return retArr;
+    }
     public void turnRight(){
         System.out.println(this.height);
         changeColumnsByRows();
@@ -44,6 +87,37 @@ public class PGMImage extends Image{
         flipRows();
     }
     
+    public void negativeFilter(){
+        for (int h = 0; h < this.imgArr.length; h++) {
+            for (int w = 0; w < this.imgArr[h].length; w++) {
+                this.imgArr[h][w] = 255 - this.imgArr[h][w];
+            }
+        }
+    }
+    
+    public void boxFilter(){
+        for (int h = 0; h < this.imgArr.length; h++) {
+            for (int w = 0; w < this.imgArr[h].length; w++) {
+                this.imgArr[h][w] = getAverageColor(h, w);
+            }
+        }
+    }
+    private double getAverageColor(int hCell, int wCell){
+        double ret;
+        double amount = 0;
+        int nCells = 0;
+        for (int h = -1; h < 2; h++) {
+            for (int w = -1; w < 2; w++) {
+                try{
+                    amount += this.imgArr[hCell+h][wCell+w];
+                    nCells++;//todo - terminar
+                }catch(IndexOutOfBoundsException ex){
+                }
+            }
+        }
+        ret = amount/nCells;
+        return ret; 
+    }
     private void changeColumnsByRows(){
         double[][] arrTmp = new double[(int)this.width][(int)this.height];
         double height = this.height;
@@ -77,52 +151,11 @@ public class PGMImage extends Image{
         this.imgArr = arrTmp;
     }
     
-    private void constructor(File img) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
-        try(Scanner scFile = new Scanner(img)) {
-            if (!scFile.nextLine().equals("P2")) {
-                throw new InvalidFormatException();
-            }
-            this.messege = scFile.nextLine();
-            this.setWidth(scFile.nextInt());
-            this.setHeight(scFile.nextInt());
-            this.setMaxWhite(scFile.nextInt());
-            pgmToArray(scFile, 255/this.maxWhite);
-        } catch (FileNotFoundException  | 
-                InvalidFormatException | 
-                InvalidImageSizeException | 
-                InvalidPGMMaxWhiteException |
-                NoSuchElementException ex) {
-            throw ex;
+    public void save(String path)throws Exception{
+        if (path == null) {
+            path = this.presavedFilePath;
         }
-    }
-    
-    private void pgmToArray(Scanner sc, double factor) throws InvalidFormatException{
-        this.imgArr = new double[(int)this.height][(int)this.width];
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
-                this.imgArr[i][j] = sc.nextInt() * factor;
-            }
-        }
-    }
-    
-    public int[][] pgmToIntArray(){
-        int[][] retArr;
-        int height = (int)this.height;
-        int width = (int)this.width;
-        retArr = new int[height][width];
-//        System.out.println(height);
-//        System.out.println(width);
-        for (int h = 0; h < height; h++) {
-            for (int w = 0; w < width; w++) {
-//                System.out.println(h + " , " + w);
-                retArr[h][w] = (int)this.imgArr[h][w];
-            }
-        }
-        return retArr;
-    }
-    
-    public void earlySave()throws Exception{
-        File file = new File(this.presavedFilePath);
+        File file = new File(path);
         FileWriter fw = new FileWriter(file, false);
         int[][] imgArr = this.pgmToIntArray();
         fw.write("P2\n" + this.messege + "\n" + (int)this.width + " " + (int)this.height + "\n" + (int)this.maxWhite + "\n");
@@ -143,7 +176,7 @@ public class PGMImage extends Image{
         this.width = Math.floor(this.width/2);
         this.imgArr = arrTmp;
         try {
-            this.earlySave();
+            this.save(null);
         } catch (Exception ex) {
             throw ex;
         }
@@ -158,22 +191,22 @@ public class PGMImage extends Image{
         }
         return arrT;
     }
-    public void moreResolution(double nInput) throws Exception{
+    public void moreResolution(double nInput, boolean byPixel) throws Exception{
         int n;
         if (nInput > 0 && nInput < 1) {
             n = 1;
-            System.out.println("por muy poco");
+//            System.out.println("por muy poco");
         }else{
             n = (int)nInput;
         }
         double[][] arrTmp = new double[(int)this.height*n][(int)this.width*n];
         arrTmp = multiplySize(arrTmp, n);
-        arrTmp = fillVoid(arrTmp, n);
+        arrTmp = fillVoid(arrTmp, n, byPixel);
         this.height = Math.ceil(this.height*n);
         this.width = Math.ceil(this.width*n);
         this.imgArr = arrTmp;
         try {
-            this.earlySave();
+            this.save(null);
         } catch (Exception ex) {
             throw ex;
         }
@@ -203,46 +236,85 @@ public class PGMImage extends Image{
         }
         return arrT;
     }
-    private double[][] fillVoid(double[][] arrT, int n){
-        for (int h = 0; h < arrT.length; h++) {
-            for (int w = 0; w < arrT[h].length; w++) {
-                if (arrT[h][w] == -1) {
-                    arrT[h][w] = colorAdder(arrT, 1, h, w);
+    private double[][] fillVoid(double[][] arrT, int n, boolean byPixel){
+        if (byPixel) {
+            for (int h = 0; h < arrT.length; h = h + n) {
+                for (int w = 0; w < arrT[h].length; w = w + n) {
+                    colorAdderPixel(arrT, n, h, w, arrT[h][w]);
+                }
+            }
+        }else{
+            for (int h = 0; h < arrT.length; h = h + n) {
+                for (int w = 0; w < arrT[h].length; w = w + n) {
+                    colorAdderGradient(arrT, n, h, w, arrT[h][w],
+                                        h - n, h + n, w - n, w + n);
                 }
             }
         }
         return arrT;
     }
-    private double colorAdder(double[][] arrT, int n, int hCell, int wCell){
-        double ret;
-        double amount = 0;
-        double nColoredCells = 0;
-        int sideToCheck = 3+2*(n-1);
-//        System.out.println(sideToCheck);
-        for (int h = -n; h < sideToCheck-1; h++) {
-            for (int w = -n; w < sideToCheck-1; w++) {
-//                System.out.println(hCell + " , " + wCell + " : " + (hCell+h) + " , " + (wCell+w));
-                try{
-                    if (arrT[hCell+h][wCell+w] != -1 &&
-                            !(h == 0 && w == 0)
-                        ) {
-                        amount += arrT[hCell+h][wCell+w];
-                        nColoredCells++;
+    private void colorAdderPixel(double[][] arrT, int n, int hCell, int wCell, double color){
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                arrT[i+hCell][j+wCell] = color;
+            }
+        }
+    }
+    private void colorAdderGradient(double[][] arrT, int n, int hCell, int wCell, double color,
+                                    int upCell, int downCell, int leftCell, int rightCell){
+        int factor = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                
+                //esquinas
+                if (j >= n - factor && i >= n - factor) {
+                    //abajo derecha
+                    arrT[i+hCell][j+wCell] = 4;
+                }else if (i <= factor - 1 && j <= factor - 1) {
+                    //ariba izq
+                    arrT[i+hCell][j+wCell] = 1;
+                }else if (i >= n - factor && j <= factor - 1) {
+                    //abajo izq
+                    arrT[i+hCell][j+wCell] = 3;
+                }else if (i <= factor - 1 && j >= n - factor) {
+                    //arriba derecha
+                    arrT[i+hCell][j+wCell] = 2;
+                }
+                
+                //lados
+                else if (i <= factor - 1) {
+                    //arriba
+                    try{
+                        System.out.println(upCell + " , " + (wCell));
+                        arrT[i+hCell][j+wCell] = this.imgArr[upCell][wCell];
+                    }catch(IndexOutOfBoundsException ex){
+                        arrT[i+hCell][j+wCell] = 0;
                     }
-                }catch(IndexOutOfBoundsException ex){
+                }else if (i >= n - factor) {
+                    //abajo
+                    arrT[i+hCell][j+wCell] = 50;
+                }else if (j <= factor - 1) {
+                    //izquierda
+                    arrT[i+hCell][j+wCell] = 100;
+                }else if (j >= n - factor) {
+                    //derecha
+                    arrT[i+hCell][j+wCell] = 150;
+                }else{
+                    arrT[i+hCell][j+wCell] = color;
                 }
             }
         }
-//        System.out.println(amount "/" +);
-        ret = amount/nColoredCells;
-        return ret;
+    }
+    private void cellPrint(){
+        
     }
     // <test>
     public void showArrayOnLogger(){
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
-                System.out.println(this.imgArr[i][j]);
+                System.out.print(this.imgArr[i][j]);
             }
+            System.out.println("");
         }
     }
     // </test>

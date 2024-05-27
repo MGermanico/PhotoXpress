@@ -32,8 +32,9 @@ public class ImageManager {
     public ImageManager(String path) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
         try{
             PGMImage img = new PGMImage(path);
-            resizedImg = img;
-            constructor(img);
+            PGMImage resizedImg = new PGMImage(path);
+//            resizedImg = img;
+            constructor(img, resizedImg);
         } catch (FileNotFoundException  | 
                 InvalidFormatException | 
                 InvalidImageSizeException | 
@@ -45,7 +46,8 @@ public class ImageManager {
     public ImageManager(File imgFile) throws FileNotFoundException, InvalidFormatException, InvalidImageSizeException, InvalidPGMMaxWhiteException{
         try{
             PGMImage img = new PGMImage(imgFile);
-            constructor(img);
+            PGMImage resizedImg = new PGMImage(imgFile);
+            constructor(img, resizedImg);
         } catch (FileNotFoundException  | 
                 InvalidFormatException | 
                 InvalidImageSizeException | 
@@ -54,22 +56,28 @@ public class ImageManager {
         }
     }
 
-    public JPanel printImage(int width, int height) throws InvalidFormatException, Exception{
+    private void constructor(Image img, PGMImage resizedImg){
+        this.img = img;
+        this.resizedImg = resizedImg;
+        initList();
+    }
+    
+    public JPanel printImage(int width, int height, boolean byPixel) throws InvalidFormatException, Exception{
         if (this.resizedImg instanceof PGMImage) {
             PGMImage resizeImg;
             resizeImg = (PGMImage) this.resizedImg;
             if (resizeImg.getHeight() < height && resizeImg.getWidth() < width) {
-                System.out.println("LA IMG ES PEQUEÑA");
+//                System.out.println("LA IMG ES PEQUEÑA");
                 if ((resizeImg.getHeight()*1.0/resizeImg.getWidth()) > height*1.0/width) {
-                    System.out.println("de alto " + (height*1.0/resizeImg.getHeight() - 1));
-                    resizeImg.moreResolution((height/resizeImg.getHeight() - 1));
+//                    System.out.println("de alto " + (height*1.0/resizeImg.getHeight() - 1));
+                    resizeImg.moreResolution((height/resizeImg.getHeight() - 1), byPixel);
                 }else{
-                    System.out.println("de ancho " + (width/resizeImg.getWidth() - 1));
-                    resizeImg.moreResolution((width*1.0/resizeImg.getWidth() - 1));
+//                    System.out.println("de ancho " + (width/resizeImg.getWidth() - 1));
+                    resizeImg.moreResolution((width*1.0/resizeImg.getWidth() - 1), byPixel);
                 }
             }else{
-                System.out.println("LA IMG ES GRANDE");
-                resizeImg = acotaImagenPGM(width, height, resizeImg);
+//                System.out.println("LA IMG ES GRANDE");
+                resizeImg = acotaImagenPGM(width, height, resizeImg, byPixel);
             }
             ImagePanelPGM pgmpanel = new ImagePanelPGM(resizeImg, width, height);
             return pgmpanel;
@@ -83,6 +91,10 @@ public class ImageManager {
             PGMImage resizeImg = (PGMImage) this.resizedImg;
             resizeImg.turnRight();
             this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.turnRight();
+            this.img = img;
         }
     }
     public void turnLeftImg(){
@@ -90,6 +102,10 @@ public class ImageManager {
             PGMImage resizeImg = (PGMImage) this.resizedImg;
             resizeImg.turnLeft();
             this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.turnLeft();
+            this.img = img;
         }
     }
     public void VerticalFlipImg(){
@@ -97,6 +113,10 @@ public class ImageManager {
             PGMImage resizeImg = (PGMImage) this.resizedImg;
             resizeImg.flipRows();
             this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.flipRows();
+            this.img = img;
         }
     }
     public void HorizontalFlipImg(){
@@ -104,9 +124,35 @@ public class ImageManager {
             PGMImage resizeImg = (PGMImage) this.resizedImg;
             resizeImg.flipColumns();
             this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.flipColumns();
+            this.img = img;
         }
     }
-    private PGMImage acotaImagenPGM(int width, int height, PGMImage resizeImg) throws Exception{
+    public void negativeFilter(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.negativeFilter();
+            this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.negativeFilter();
+            this.img = img;
+        }
+    }
+    public void boxFilter(){
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage resizeImg = (PGMImage) this.resizedImg;
+            resizeImg.boxFilter();
+            this.resizedImg = resizeImg;
+            
+            PGMImage img = (PGMImage) this.img;
+            img.boxFilter();
+            this.img = img;
+        }
+    }
+    private PGMImage acotaImagenPGM(int width, int height, PGMImage resizeImg, boolean byPixel) throws Exception{
         int iterations = 0;
         int n = -1;
         while(resizeImg.getHeight() - height > resizeImg.getWidth()- width && resizeImg.getHeight() > height && n == -1){
@@ -130,7 +176,7 @@ public class ImageManager {
             iterations++;
         }
         int factor = n;
-        resizeImg.moreResolution(n);
+        resizeImg.moreResolution(n, byPixel);
         while(factor >= 1){
             resizeImg.lessResolution();
             factor /= 2;
@@ -142,9 +188,12 @@ public class ImageManager {
         return resizeImg;
     }
     
-    private void constructor(Image img){
-        this.img = img;
-        initList();
+    public void save() throws Exception{
+        if (this.resizedImg instanceof PGMImage) {
+            PGMImage img = (PGMImage) this.img;
+            img.save(img.getPath());
+            this.img = img;
+        }
     }
     
     private void initList(){
