@@ -262,7 +262,7 @@ public class PGMImage extends Image{
     }
     private void colorAdderGradient(double[][] arrT, int n, int hCell, int wCell, double color,
                                     int upCell, int downCell, int leftCell, int rightCell){
-        int factor = 1;
+        int factor = 4;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 
@@ -285,7 +285,7 @@ public class PGMImage extends Image{
                 else if (i <= factor - 1) {
                     //arriba
                     try{
-                        System.out.println(upCell + " , " + (wCell));
+//                        System.out.println(upCell + " , " + (wCell));
                         arrT[i+hCell][j+wCell] = this.imgArr[upCell][wCell];
                     }catch(IndexOutOfBoundsException ex){
                         arrT[i+hCell][j+wCell] = 0;
