@@ -4,6 +4,7 @@
  */
 package com.im.Objects;
 
+import Utils.utilsGestionString;
 import com.im.exceptions.InvalidFormatException;
 import com.im.exceptions.InvalidImageSizeException;
 import com.im.exceptions.InvalidNumberException;
@@ -162,7 +163,7 @@ public class PGMImage extends Image{
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
 //                System.out.println(i + " , " + j + " = " + imgArr[i][j]);
-                fw.write(imgArr[i][j] + " ");
+                fw.write(utilsGestionString.normalizaTamanyos(imgArr[i][j] + "", 4));
             }
             fw.write("\n");
         }
@@ -314,6 +315,25 @@ public class PGMImage extends Image{
                 }else if (i <= factor - 1 && j <= factor - 1) {
                     //ariba izq
                     arrT[i+hCell][j+wCell] = colorUpLeft;
+                    for (int k = 1; k < factor + 1; k++) {
+                        if (j == n - factor + k - 1 && i == n - factor + k - 1) {
+                            mainCellH = i+hCell;
+                            mainCellW = j+wCell;
+                            arrT[i + hCell][j + wCell] = getGraddientValue(color, colorDownRight, k, factor);
+                            for (int l = 1; l < factor; l++) {
+                                try {
+                                    arrT[mainCellH + l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
+                            for (int l = 1; l < factor; l++) {
+                                try {
+                                    arrT[mainCellH][mainCellW + l] = getGraddientValue(arrT[mainCellH][mainCellW], colorRight, k, factor);;
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
+                        }
+                    }
                 }else if (i >= n - factor && j <= factor - 1) {
                     //abajo izq
                     for (int k = 1; k < factor + 1; k++) {
@@ -321,23 +341,43 @@ public class PGMImage extends Image{
                             mainCellH = i+hCell;
                             mainCellW = j+wCell;
                             arrT[i+hCell][j+wCell] = getGraddientValue(color, colorDownLeft, k, factor);
-//                            for (int l = 1; l < factor; l++) {
-//                                try{
-//                                    arrT[mainCellH+l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
-//                                } catch (IndexOutOfBoundsException ex) {
-//                                }
-//                            }
-//                            for (int l = 1; l < factor; l++) {
-//                                try{
-//                                    arrT[mainCellH][mainCellW+l] = getGraddientValue(arrT[mainCellH][mainCellW], colorLeft, k, factor);; 
-//                                } catch (IndexOutOfBoundsException ex) {
-//                                }
-//                            }
+                            for (int l = 1; l < factor; l++) {
+                                try{
+                                    arrT[mainCellH-l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
+                            for (int l = 1; l < factor; l++) {
+                                try{
+                                    arrT[mainCellH][mainCellW+l] = getGraddientValue(arrT[mainCellH][mainCellW], colorDownLeft, k, factor);; 
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
                         }
                     }
                 }else if (i <= factor - 1 && j >= n - factor) {
                     //arriba derecha
                     arrT[i+hCell][j+wCell] = colorUpRight;
+                    for (int k = 1; k < factor + 1; k++) {
+                        if (i == factor -k && j == n - factor + k - 1) {
+                            System.out.println("su");
+                            mainCellH = i+hCell;
+                            mainCellW = j+wCell;
+                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorUpRight, k, factor);
+                            for (int l = 1; l < factor; l++) {
+                                try{
+                                    arrT[mainCellH+l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorUp, k, factor);;
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
+                            for (int l = 1; l < factor; l++) {
+                                try{
+                                    arrT[mainCellH][mainCellW-l] = getGraddientValue(arrT[mainCellH][mainCellW], colorUpRight, k, factor);; 
+                                } catch (IndexOutOfBoundsException ex) {
+                                }
+                            }
+                        }
+                    }
                 }
                 
                 //lados

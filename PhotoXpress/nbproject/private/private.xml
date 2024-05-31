@@ -6,10 +6,14 @@
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/ImageManager.java</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/px/gui/ExecGUI.java</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/data/presavedImage.pgm</file>
+            <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/Objects/Image.java</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/imagenes/imagen.pgm</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/imagenes/imagen_1.pgm</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/Objects/PGMImage.java</file>
             <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/Objects/ImagePanelPGM.java</file>
+            <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/im/gui/ExecTesting.java</file>
+            <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/Utils/utilsGestionString.java</file>
+            <file>file:/D:/GIT/Repositorios/PhotoXpress/PhotoXpress/src/com/Utils/utilsCreadorMenus.java</file>
         </group>
     </open-files>
 </project-private>

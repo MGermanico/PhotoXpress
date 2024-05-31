@@ -232,7 +232,7 @@ public class ExecGUI{
         PGMImage img = (PGMImage)image;
         ImagePanelPGM imgPanel;
         try {
-            imgPanel = (ImagePanelPGM) im.printImage(640, 360, true);
+            imgPanel = (ImagePanelPGM) im.printImage(640, 360, false);
             imgPanel.setHeightMove(20);
             imgPanel.setWidthMove(600);
             imagePanel = imgPanel;
