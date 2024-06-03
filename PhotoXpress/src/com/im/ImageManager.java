@@ -14,9 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 /**
@@ -26,6 +23,7 @@ import javax.swing.JPanel;
 public class ImageManager {
     private Image img;
     private PGMImage resizedImg;
+    private boolean byPixel = false;
     private HashMap<Double, Integer> factorOfResizing = new HashMap<Double, Integer>();
     private ArrayList<Double> factorOfResizingKeyList = new ArrayList<Double>();
     
@@ -62,7 +60,7 @@ public class ImageManager {
         initList();
     }
     
-    public JPanel printImage(int width, int height, boolean byPixel) throws InvalidFormatException, Exception{
+    public JPanel printImage(int width, int height) throws InvalidFormatException, Exception{
         if (this.resizedImg instanceof PGMImage) {
             PGMImage resizeImg;
             resizeImg = (PGMImage) this.resizedImg;
@@ -215,5 +213,13 @@ public class ImageManager {
     public void setImg(Image img) {
         this.img = img;
         resizedImg = (PGMImage) img;
+    }
+
+    public boolean isByPixel() {
+        return byPixel;
+    }
+
+    public void setByPixel(boolean byPixel) {
+        this.byPixel = byPixel;
     }
 }

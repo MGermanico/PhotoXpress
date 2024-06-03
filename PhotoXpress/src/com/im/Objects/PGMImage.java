@@ -78,10 +78,10 @@ public class PGMImage extends Image{
         return retArr;
     }
     public void turnRight(){
-        System.out.println(this.height);
+//        System.out.println(this.height);
         changeColumnsByRows();
         flipColumns();
-        System.out.println(this.height);
+//        System.out.println(this.height);
     }
     public void turnLeft(){
         changeColumnsByRows();
@@ -99,18 +99,18 @@ public class PGMImage extends Image{
     public void boxFilter(){
         for (int h = 0; h < this.imgArr.length; h++) {
             for (int w = 0; w < this.imgArr[h].length; w++) {
-                this.imgArr[h][w] = getAverageColor(h, w);
+                this.imgArr[h][w] = getAverageColor(this.imgArr, h, w);
             }
         }
     }
-    private double getAverageColor(int hCell, int wCell){
+    private double getAverageColor(double[][] imgArr, int hCell, int wCell){
         double ret;
         double amount = 0;
         int nCells = 0;
         for (int h = -1; h < 2; h++) {
             for (int w = -1; w < 2; w++) {
                 try{
-                    amount += this.imgArr[hCell+h][wCell+w];
+                    amount += imgArr[hCell+h][wCell+w];
                     nCells++;//todo - terminar
                 }catch(IndexOutOfBoundsException ex){
                 }
@@ -240,31 +240,9 @@ public class PGMImage extends Image{
     private double[][] fillVoid(double[][] arrT, int n, boolean byPixel){
         double colorUp, colorDown, colorRight, colorLeft;
         double colorUpRight, colorUpLeft, colorDownLeft, colorDownRight;
-        double[][] arrTT = this.copy(arrT);
-        if (byPixel) {
-            for (int h = 0; h < arrT.length; h = h + n) {
-                for (int w = 0; w < arrT[h].length; w = w + n) {
-                    colorAdderPixel(arrT, n, h, w, arrT[h][w]);
-                }
-            }
-        }else{
-            for (int h = 0; h < arrT.length; h = h + n) {
-                for (int w = 0; w < arrT[h].length; w = w + n) {
-                    
-                    colorUp = findColor(arrTT, h, w, -n, 0);
-                    colorDown = findColor(arrTT, h, w, +n, 0);
-                    colorRight = findColor(arrTT, h, w, 0, +n);
-                    colorLeft = findColor(arrTT, h, w, 0, -n);
-                    
-                    colorUpRight = findColor(arrTT, h, w, -n, +n);
-                    colorUpLeft = findColor(arrTT, h, w, -n, -n);
-                    colorDownRight = findColor(arrTT, h, w, +n, +n);
-                    colorDownLeft = findColor(arrTT, h, w, +n, -n);
-                    
-                    colorAdderGradient(arrT, n, h, w, arrT[h][w],
-                                        colorUp, colorDown, colorLeft, colorRight,
-                                        colorUpRight, colorUpLeft, colorDownLeft, colorDownRight);
-                }
+        for (int h = 0; h < arrT.length; h = h + n) {
+            for (int w = 0; w < arrT[h].length; w = w + n) {
+                colorAdderPixel(arrT, n, h, w, arrT[h][w]);
             }
         }
         return arrT;
@@ -280,138 +258,6 @@ public class PGMImage extends Image{
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 arrT[i+hCell][j+wCell] = color;
-            }
-        }
-    }
-    private void colorAdderGradient(double[][] arrT, int n, int hCell, int wCell, double color,
-                                    double colorUp, double colorDown, double colorLeft, double colorRight,
-                                    double colorUpRight, double colorUpLeft, double colorDownLeft, double colorDownRight){
-        int factor = 2;
-        int mainCellH, mainCellW;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                //esquinas
-                if (j >= n - factor && i >= n - factor) {
-                    //abajo derecha
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (j == n - factor + k - 1 && i == n - factor + k - 1) {
-                            mainCellH = i+hCell;
-                            mainCellW = j+wCell;
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorDownRight, k, factor);
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH+l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH][mainCellW+l] = getGraddientValue(arrT[mainCellH][mainCellW], colorRight, k, factor);; 
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                        }
-                    }
-                }else if (i <= factor - 1 && j <= factor - 1) {
-                    //ariba izq
-                    arrT[i+hCell][j+wCell] = colorUpLeft;
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (j == n - factor + k - 1 && i == n - factor + k - 1) {
-                            mainCellH = i+hCell;
-                            mainCellW = j+wCell;
-                            arrT[i + hCell][j + wCell] = getGraddientValue(color, colorDownRight, k, factor);
-                            for (int l = 1; l < factor; l++) {
-                                try {
-                                    arrT[mainCellH + l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                            for (int l = 1; l < factor; l++) {
-                                try {
-                                    arrT[mainCellH][mainCellW + l] = getGraddientValue(arrT[mainCellH][mainCellW], colorRight, k, factor);;
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                        }
-                    }
-                }else if (i >= n - factor && j <= factor - 1) {
-                    //abajo izq
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (i == n - factor + k - 1 && i == n - factor + k - 1) {
-                            mainCellH = i+hCell;
-                            mainCellW = j+wCell;
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorDownLeft, k, factor);
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH-l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorDown, k, factor);;
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH][mainCellW+l] = getGraddientValue(arrT[mainCellH][mainCellW], colorDownLeft, k, factor);; 
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                        }
-                    }
-                }else if (i <= factor - 1 && j >= n - factor) {
-                    //arriba derecha
-                    arrT[i+hCell][j+wCell] = colorUpRight;
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (i == factor -k && j == n - factor + k - 1) {
-                            System.out.println("su");
-                            mainCellH = i+hCell;
-                            mainCellW = j+wCell;
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorUpRight, k, factor);
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH+l][mainCellW] = getGraddientValue(arrT[mainCellH][mainCellW], colorUp, k, factor);;
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                            for (int l = 1; l < factor; l++) {
-                                try{
-                                    arrT[mainCellH][mainCellW-l] = getGraddientValue(arrT[mainCellH][mainCellW], colorUpRight, k, factor);; 
-                                } catch (IndexOutOfBoundsException ex) {
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                //lados
-                else if (i <= factor - 1) {
-                    //arriba
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (i == factor - k) {
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorUp, k, factor);
-                        }
-                    }
-                }else if (i >= n - factor) {
-                    //abajo
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (i == n - factor + k - 1) {
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorDown, k, factor);
-                        }
-                    }
-                }else if (j <= factor - 1) {
-                    //izquierda
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (j == factor - k) {
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorLeft, k, factor);
-                        }
-                    }
-                }else if (j >= n - factor) {
-                    //derecha
-                    for (int k = 1; k < factor + 1; k++) {
-                        if (j == n - factor + k - 1) {
-                            arrT[i+hCell][j+wCell] = getGraddientValue(color, colorRight, k, factor);
-                        }
-                    }
-                }else{
-                    arrT[i+hCell][j+wCell] = color;
-                }
             }
         }
     }

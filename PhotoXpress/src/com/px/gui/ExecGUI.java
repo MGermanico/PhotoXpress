@@ -8,22 +8,16 @@ import com.im.ImageManager;
 import com.im.Objects.Image;
 import com.im.Objects.ImagePanelPGM;
 import com.im.Objects.PGMImage;
-import com.im.exceptions.InvalidFormatException;
-import com.im.exceptions.InvalidImageSizeException;
-import com.im.exceptions.InvalidPGMMaxWhiteException;
 import com.px.windows.ErrorWindow;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -159,31 +153,65 @@ public class ExecGUI{
     }
     
     private void inicializaMenuBar(){
-        JMenuItem jMenuItemCargar = new JMenuItem("Open");
-        this.menuFile.add(jMenuItemCargar);
-        jMenuItemCargar.addActionListener(new ActionListener() {
+        JMenu jMenuItemCargar = new JMenu("Cargar");
+        JMenuItem jMenuItemFileBrowser = new JMenuItem("Explorador de archivos");
+        JMenuItem jMenuItemGuardar = new JMenuItem("Guardar");
+        JLabel jLabelImgFolder = new JLabel("      -- Carpeta imágenes --   ");
+        
+        jMenuItemFileBrowser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cargarImagen();
             }
         });
-        JMenuItem jMenuItemGuardar = new JMenuItem("Save");
-        this.menuFile.add(jMenuItemGuardar);
+        
         jMenuItemGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 guardarImagen();
             }
         });
+        
+        jMenuItemCargar.add(jMenuItemFileBrowser);
+        jMenuItemCargar.add(jLabelImgFolder);
+        this.menuFile.add(jMenuItemCargar);
+        this.menuFile.add(jMenuItemGuardar);
+        
+        File imgFolder = new File("imagenes");
+        File[] savedImages = imgFolder.listFiles();
+        File actualImage;
+        String actualPath = "";
+        
+        for (int i = 0; i < savedImages.length; i++) {
+            actualImage = savedImages[i];
+            actualPath = actualImage.getPath();
+            addImages(actualPath, actualImage, jMenuItemCargar);
+        }
     }
-    
+    private void addImages(String actualPath, File actualImage, JMenuItem jMenuItemCargar){
+        JMenuItem imagenActual;
+        imagenActual = new JMenuItem(actualImage.getName());
+        imagenActual.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cargarImagen(actualPath);
+            }
+        });
+        jMenuItemCargar.add(imagenActual);
+    }
+    private void cargarImagen(String path){
+        this.backgroundFrame.dispose();
+        new ExecGUI(path);
+    }
     private void cargarImagen(){
         JFileChooser eligeArchivos = new JFileChooser();
         eligeArchivos.showOpenDialog(this.backgroundFrame);
         File archivo = eligeArchivos.getSelectedFile();
         
-        this.backgroundFrame.dispose();
-        new ExecGUI(archivo.getPath());
+        if (archivo != null) {
+            this.backgroundFrame.dispose();
+            new ExecGUI(archivo.getPath());
+        }
     }
     
     private void guardarImagen(){
@@ -232,14 +260,14 @@ public class ExecGUI{
         PGMImage img = (PGMImage)image;
         ImagePanelPGM imgPanel;
         try {
-            imgPanel = (ImagePanelPGM) im.printImage(640, 360, false);
+            imgPanel = (ImagePanelPGM) im.printImage(640, 360);
             imgPanel.setHeightMove(20);
             imgPanel.setWidthMove(600);
             imagePanel = imgPanel;
             backgroundFrame.add(imagePanel);
 //            backgroundFrame.remove(imagePanel);
             
-            System.out.println("DONE");
+//            System.out.println("DONE");
         } catch (Exception ex) {
             ex.printStackTrace();
             throwError(ex.getMessage());
