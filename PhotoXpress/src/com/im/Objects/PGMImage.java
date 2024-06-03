@@ -4,7 +4,7 @@
  */
 package com.im.Objects;
 
-import Utils.utilsGestionString;
+import com.Utils.utilsGestionString;
 import com.im.exceptions.InvalidFormatException;
 import com.im.exceptions.InvalidImageSizeException;
 import com.im.exceptions.InvalidNumberException;
